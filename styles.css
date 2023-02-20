@@ -1,28 +1,28 @@
 
 /* Your CSS Code here. */
 #gameContainer {
-	width: 400px;
-	height: 400px;
-	display: flex;
-	flex-wrap: wrap;
+    width: 400px;
+    height: 400px;
+    display: flex;
+    flex-wrap: wrap;
 }
 
-#gameContainer div {
-	width: 40px;
-	height: 40px;
-	border: 1px solid black;
-	box-sizing: border-box;
+.pixel {
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
 }
 
 .snakeBodyPixel {
-	background-color: green;
+    background-color: green;
 }
 
 .food {
-	background-color: red;
+    background-color: red;
 }
 
 .scoreBoard {
-	margin-top: 10px;
-	text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
 }

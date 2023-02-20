@@ -3,86 +3,74 @@ const gameContainer = document.getElementById("gameContainer");
 const scoreBoard = document.querySelector(".scoreBoard");
 const score = document.getElementById("score");
 const pixels = [];
-
-let currentSnake = [401, 400, 399]; // starting position of the snake
+const currentSnake = ["pixel201", "pixel202", "pixel203"];
 let direction = "right";
-let intervalId = null;
-let foodPosition = null;
+let intervalId;
+let foodPosition;
 let currentScore = 0;
-
-function createPixels() {
-    for (let i = 1; i <= 400; i++) {
-        const pixel = document.createElement("div");
-        pixel.setAttribute("id", `pixel${i}`);
-        pixel.classList.add("pixel");
-        pixels.push(pixel);
-        gameContainer.appendChild(pixel);
-    }
-}
-
-function createFood() {
-    let randomNumber = Math.floor(Math.random() * 400);
-    while (currentSnake.includes(randomNumber)) {
-        randomNumber = Math.floor(Math.random() * 400);
-    }
-    const foodPixel = document.getElementById(`pixel${randomNumber}`);
-    foodPixel.classList.add("food");
-    foodPosition = randomNumber;
-}
-
-function moveSnake() {
-    const head = currentSnake[0];
-    let newHead = null;
-
-    switch (direction) {
-        case "up":
-            newHead = head - 20;
-            break;
-        case "down":
-            newHead = head + 20;
-            break;
-        case "left":
-            newHead = head - 1;
-            break;
-        case "right":
-            newHead = head + 1;
-            break;
-    }
-
-    if (newHead >= 400 || newHead < 0 || (newHead % 20 === 0 && direction === "right") || (newHead % 20 === 19 && direction === "left") || currentSnake.includes(newHead)) {
-        clearInterval(intervalId);
-        alert("Game over!");
-        return;
-    }
-
-    currentSnake.unshift(newHead);
-    const tail = currentSnake.pop();
-    const headPixel = document.getElementById(`pixel${newHead}`);
-    const tailPixel = document.getElementById(`pixel${tail}`);
-
-    headPixel.classList.add("snakeBodyPixel");
-    tailPixel.classList.remove("snakeBodyPixel");
-
-    if (newHead === foodPosition) {
-        headPixel.classList.remove("food");
-        createFood();
-        currentScore++;
-        score.textContent = currentScore;
-    }
-}
 
 createPixels();
 createFood();
 intervalId = setInterval(moveSnake, 100);
 
-document.addEventListener("keydown", (event) => {
+function createPixels() {
+    for (let i = 1; i <= 400; i++) {
+        const pixel = document.createElement("div");
+        pixel.setAttribute("id", `pixel${i}`);
+        pixel.setAttribute("class", "pixel");
+        gameContainer.appendChild(pixel);
+        pixels.push(pixel);
+    }
+}
+
+function createFood() {
+    let newFoodPosition;
+    do {
+        newFoodPosition = `pixel${Math.floor(Math.random() * 400) + 1}`;
+    } while (currentSnake.includes(newFoodPosition));
+    foodPosition = newFoodPosition;
+    document.getElementById(foodPosition).classList.add("food");
+}
+
+function moveSnake() {
+    const head = currentSnake[currentSnake.length - 1];
+    let newHead;
+
+    if (direction === "up") {
+        newHead = `pixel${Number(head.substr(5)) - 20}`;
+    } else if (direction === "down") {
+        newHead = `pixel${Number(head.substr(5)) + 20}`;
+    } else if (direction === "left") {
+        newHead = `pixel${Number(head.substr(5)) - 1}`;
+    } else if (direction === "right") {
+        newHead = `pixel${Number(head.substr(5)) + 1}`;
+    }
+
+    if (pixels.includes(document.getElementById(newHead)) && !currentSnake.includes(newHead)) {
+        currentSnake.push(newHead);
+        document.getElementById(newHead).classList.add("snakeBodyPixel");
+        if (newHead === foodPosition) {
+            document.getElementById(foodPosition).classList.remove("food");
+            createFood();
+            currentScore++;
+            score.innerHTML = currentScore;
+        } else {
+            const tail = currentSnake.shift();
+            document.getElementById(tail).classList.remove("snakeBodyPixel");
+        }
+    } else {
+        clearInterval(intervalId);
+        alert(`Game Over! Your score is ${currentScore}.`);
+    }
+}
+
+document.addEventListener("keydown", function(event) {
     const key = event.keyCode;
     if (key === 38 && direction !== "down") {
         direction = "up";
     } else if (key === 40 && direction !== "up") {
         direction = "down";
-    }
-	else if (key === 37 && direction !== "right") {
+    } else  if (key === 37 && direction !== "right") {
         direction = "left";
     } else if (key === 39 && direction !== "left") {
         direction = "right";
